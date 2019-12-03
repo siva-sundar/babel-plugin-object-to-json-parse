@@ -18,17 +18,16 @@ export function ObjectExpression(
   try {
     const obj = converter(path.node)
     const json = JSON.stringify(obj)
-    // escaping for single quotes
-    const escapedJson = json.replace(/'/g, "\\'")
+
     // it simply isn't worth it to convert into the AST objects that are too small.
     // so, this plugin only convert large objects by default.
     const { minJSONStringSize } = state.opts
     const threshold =
       minJSONStringSize !== undefined ? minJSONStringSize : DEFAULT_THRESHOLD
-    if (escapedJson.length < threshold) {
+    if (json.length < threshold) {
       return
     }
-    path.replaceWithSourceString(`JSON.parse('${escapedJson}')`)
+    path.replaceWithSourceString(`JSON.parse('${json}')`)
   } catch (e) {
     // disable error message
     // const { loc } = path.parent
